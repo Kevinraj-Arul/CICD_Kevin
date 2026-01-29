@@ -1,0 +1,26 @@
+  
+      # We always use /Users/vegash.p@diggibyte.com for all resources to make sure we only have a single copy.
+# This runs as vegash.p@diggibyte.com in production. We could also use a service principal here,
+      # see https://docs.databricks.com/dev-tools/bundles/permissions.html.
+
+
+# Databricks Asset Bundle configuration, more info here: https://docs.databricks.com/en/dev-tools/bundles/settings.html
+bundle:
+  name: "CICD"
+
+include:
+  - resources/*.yml
+  - resources/*/*.yml
+
+targets:
+# The 'prod' target, used for production deployment.
+  dev:
+    mode: production
+    workspace:
+      host: https://dbc-3c33e389-a9f2.cloud.databricks.com/
+       # We always use /Users/vegash.p@diggibyte.com for all resources to make sure we only have a single copy.
+      root_path: /Workspace/Shared/Production
+            # This runs as vegash.p@diggibyte.com in production. We could also use a service principal here,
+      # see https://docs.databricks.com/dev-tools/bundles/permissions.html.
+    run_as:
+      user_name: "kevinraj.arul@diggibyte.com"
