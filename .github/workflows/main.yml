@@ -1,0 +1,70 @@
+name: sample-dev
+ 
+on:
+  push:
+    branches:
+      - main
+ 
+jobs:
+# ==========================================================================
+# JOB 1: Validate Databricks Asset Bundle
+# ==========================================================================
+  validate:
+    name: Validate Databricks Asset Bundle
+    runs-on: ubuntu-latest
+    continue-on-error: false
+ 
+    env:
+      DATABRICKS_HOST: https://dbc-3c33e389-a9f2.cloud.databricks.com/
+      DATABRICKS_TOKEN: dapi1e93cd1fe045b5ffb855382560f6daba
+      REPO_PATH: /Workspace/Shared/CICD_Kevin/dabs
+ 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+ 
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+ 
+      - name: Ensure .py files are Databricks notebooks (ubuntu-latest)
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "${{ github.workspace }}" -Filter "*.py" -Recurse | ForEach-Object {
+            ("# Databricks notebook source`n" + (Get-Content $_.FullName -Raw)) | Set-Content $_.FullName
+          }
+ 
+      - name: Validate bundle
+        run: databricks bundle validate --target dev
+ 
+ 
+# ==========================================================================
+# JOB 2: Deploy Databricks Asset Bundle
+# ==========================================================================
+  deploy:
+    name: Deploy Databricks Asset Bundle
+    needs: validate
+    if: needs.validate.result == 'success'
+    runs-on: ubuntu-latest
+    continue-on-error: false
+ 
+    env:
+      DATABRICKS_HOST: https://dbc-3c33e389-a9f2.cloud.databricks.com/
+      DATABRICKS_TOKEN: dapi1e93cd1fe045b5ffb855382560f6daba
+      REPO_PATH: /Workspace/Shared/CICD_Kevin/dabs
+ 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+ 
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+ 
+      - name: Ensure .py files are Databricks notebooks (ubuntu-latest)
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "${{ github.workspace }}" -Filter "*.py" -Recurse | ForEach-Object {
+            ("# Databricks notebook source`n" + (Get-Content $_.FullName -Raw)) | Set-Content $_.FullName
+          }
+ 
+      - name: Deploy bundle
+        run: databricks bundle deploy --target dev
