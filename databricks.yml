@@ -18,9 +18,6 @@ targets:
     mode: production
     workspace:
       host: https://dbc-3c33e389-a9f2.cloud.databricks.com/
-       # We always use /Users/vegash.p@diggibyte.com for all resources to make sure we only have a single copy.
       root_path: /Workspace/Shared/Production
-            # This runs as vegash.p@diggibyte.com in production. We could also use a service principal here,
-      # see https://docs.databricks.com/dev-tools/bundles/permissions.html.
     run_as:
       user_name: "kevinraj.arul@diggibyte.com"
